@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//dto/request/UpdateUserRequest.java
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateLessonRequest {
+public class UpdateUserRequest {
 
-	
-	private String title;
-	private String content;
-	private String videoUrl;
-	private Integer lessonOrder;
+ private String name;    // optional
+ private String email;   // optional
 }
