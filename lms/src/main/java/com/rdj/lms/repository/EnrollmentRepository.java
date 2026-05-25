@@ -29,6 +29,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 	    boolean existsByStudentIdAndInstructorId(
 	        @Param("studentId") Long studentId,
 	        @Param("instructorId") Long instructorId);
+	 
 	
 	
 	
