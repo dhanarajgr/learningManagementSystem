@@ -1,7 +1,6 @@
 package com.rdj.lms.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.rdj.lms.dto.request.CreateReviewRequest;
 import com.rdj.lms.dto.response.ReviewResponse;
 import com.rdj.lms.service.ReviewService;
-
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
 //controller/ReviewController.java
@@ -28,8 +25,7 @@ public class ReviewController {
  @Autowired
  private ReviewService reviewService;
 
- // ─── ADD REVIEW — Student enrolled only ───────────
- @PostMapping("/{courseId}")
+ @PostMapping("/course/{courseId}")
  public ResponseEntity<ReviewResponse> addReview(
          @PathVariable Long courseId,
          @Valid @RequestBody CreateReviewRequest request) {
@@ -39,8 +35,9 @@ public class ReviewController {
                      .addReview(courseId, request));
  }
 
- // ─── GET REVIEWS BY COURSE — Public ───────────────
- @GetMapping("/{courseId}")
+ // ─── GET REVIEWS BY COURSE ────────────────────────
+ // GET /api/reviews/course/1
+ @GetMapping("/course/{courseId}")
  public ResponseEntity<List<ReviewResponse>>
              getReviewsByCourse(
                      @PathVariable Long courseId) {
@@ -49,7 +46,8 @@ public class ReviewController {
                      .getReviewsByCourse(courseId));
  }
 
- // ─── GET MY REVIEWS — Student only ────────────────
+ // ─── GET MY REVIEWS ───────────────────────────────
+ // GET /api/reviews/my-reviews
  @GetMapping("/my-reviews")
  public ResponseEntity<List<ReviewResponse>>
                                  getMyReviews() {
@@ -57,8 +55,9 @@ public class ReviewController {
              .ok(reviewService.getMyReviews());
  }
 
- // ─── UPDATE REVIEW — Student own only ─────────────
- @PutMapping("/{reviewId}")
+ // ─── UPDATE REVIEW ────────────────────────────────
+ // PUT /api/reviews/update/1
+ @PutMapping("/update/{reviewId}")
  public ResponseEntity<ReviewResponse> updateReview(
          @PathVariable Long reviewId,
          @Valid @RequestBody CreateReviewRequest request) {
@@ -68,7 +67,8 @@ public class ReviewController {
  }
 
  // ─── DELETE REVIEW ────────────────────────────────
- @DeleteMapping("/{reviewId}")
+ // DELETE /api/reviews/delete/1
+ @DeleteMapping("/delete/{reviewId}")
  public ResponseEntity<String> deleteReview(
          @PathVariable Long reviewId) {
      reviewService.deleteReview(reviewId);

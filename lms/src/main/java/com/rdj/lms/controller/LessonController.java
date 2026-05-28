@@ -1,7 +1,6 @@
 package com.rdj.lms.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ import com.rdj.lms.dto.request.UpdateLessonRequest;
 import com.rdj.lms.dto.response.LessonResponse;
 import com.rdj.lms.service.LessonService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
 //controller/LessonController.java

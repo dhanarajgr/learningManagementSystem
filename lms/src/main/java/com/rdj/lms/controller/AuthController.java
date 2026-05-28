@@ -10,7 +10,7 @@ import com.rdj.lms.dto.request.LoginRequest;
 import com.rdj.lms.dto.request.RegisterRequest;
 import com.rdj.lms.dto.response.AuthResponse;
 import com.rdj.lms.service.AuthService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
 //controller/AuthController.java

@@ -1,6 +1,7 @@
 package com.rdj.lms.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,15 +52,15 @@ public class Course {
 	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL )
 	@OrderBy("lessonOrder ASC")
 	@JsonIgnore
-	private List<Lesson> lessons;
+	private List<Lesson> lessons = new ArrayList<Lesson>();
 	
 	@OneToMany(mappedBy = "course", cascade =CascadeType.ALL )
 	@JsonIgnore
-	private List<Enrollment> enrollments;
+	private List<Enrollment> enrollments = new ArrayList<Enrollment>() ;
 	
 	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Review> reviews;
+	private List<Review> reviews = new ArrayList<Review>() ;
 	
 	
 	@PrePersist

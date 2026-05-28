@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rdj.lms.dto.request.UpdateUserRequest;
 import com.rdj.lms.dto.response.UserResponse;
 import com.rdj.lms.service.UserService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 //controller/UserController.java
 @RestController

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 //security/SecurityConfig.java
 @Configuration
@@ -34,10 +35,22 @@ public class SecurityConfig {
          .csrf(csrf -> csrf.disable())
 
          .authorizeHttpRequests(auth -> auth
+
+             // ── PUBLIC ROUTES ──────────────────────
              .requestMatchers("/api/auth/**").permitAll()
              .requestMatchers("/swagger-ui/**").permitAll()
              .requestMatchers("/swagger-ui.html").permitAll()
              .requestMatchers("/v3/api-docs/**").permitAll()
+
+             // ── PUBLIC GET ROUTES ──────────────────
+             .requestMatchers(
+                 HttpMethod.GET,
+                 "/api/courses/**").permitAll()
+             .requestMatchers(
+                 HttpMethod.GET,
+                 "/api/reviews/**").permitAll()
+
+             // ── PROTECTED ROUTES ───────────────────
              .anyRequest().authenticated()
          )
 
@@ -60,7 +73,8 @@ public class SecurityConfig {
 
  @Bean
  public AuthenticationManager authenticationManager(
-         AuthenticationConfiguration config) throws Exception {
+         AuthenticationConfiguration config)
+         throws Exception {
      return config.getAuthenticationManager();
  }
 
