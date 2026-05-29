@@ -1,6 +1,7 @@
 package com.rdj.lms.service.imp;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.rdj.lms.dto.response.EnrollmentResponse;
 import com.rdj.lms.entity.Course;
 import com.rdj.lms.entity.Enrollment;
+import com.rdj.lms.entity.Review;
 import com.rdj.lms.entity.Role;
 import com.rdj.lms.entity.User;
 import com.rdj.lms.exception.AlreadyExistsException;
@@ -16,6 +18,7 @@ import com.rdj.lms.exception.ResourceNotFoundException;
 import com.rdj.lms.mapper.EnrollmentMapper;
 import com.rdj.lms.repository.CourseRepository;
 import com.rdj.lms.repository.EnrollmentRepository;
+import com.rdj.lms.repository.ReviewRepository;
 import com.rdj.lms.repository.UserRepository;
 import com.rdj.lms.service.EnrollmentService;
 
@@ -35,6 +38,9 @@ public class EnrollmentServiceImpl
 
  @Autowired
  private EnrollmentMapper enrollmentMapper;
+ 
+ @Autowired
+ private ReviewRepository reviewRepository;
 
  // ─── HELPER — Get Logged In User ──────────────────
  private User getLoggedInUser() {
@@ -215,7 +221,60 @@ public class EnrollmentServiceImpl
          .orElseThrow(() -> new ResourceNotFoundException(
              "You are not enrolled in this course"));
 
-     // 4. delete enrollment
+     // 4. delete review if exists
+     Optional<Review> review = reviewRepository
+         .findByStudentIdAndCourseId(
+             loggedInUser.getId(), courseId);
+
+     if (review.isPresent()) {
+         reviewRepository.delete(review.get());
+     }
+
+     // 5. delete enrollment
      enrollmentRepository.delete(enrollment);
  }
+ 
+ 
+//─── ADMIN UNENROLL STUDENT ───────────────────────
+@Override
+public void adminUnenrollStudent(Long studentId,
+                                Long courseId) {
+
+  // 1. get logged in user
+  User loggedInUser = getLoggedInUser();
+
+  // 2. check admin role
+  if (loggedInUser.getRole() != Role.ADMIN) {
+      throw new BadRequestException(
+          "Only admin can unenroll students");
+  }
+
+  // 3. check student exists
+  User student = userRepository.findById(studentId)
+      .orElseThrow(() -> new ResourceNotFoundException(
+          "Student not found with id: " + studentId));
+
+  // 4. check student role
+  if (student.getRole() != Role.STUDENT) {
+      throw new BadRequestException(
+          "User is not a student");
+  }
+
+  // 5. find enrollment
+  Enrollment enrollment = enrollmentRepository
+      .findByStudentIdAndCourseId(studentId, courseId)
+      .orElseThrow(() -> new ResourceNotFoundException(
+          "Student is not enrolled in this course"));
+
+  // 6. delete review if exists
+  Optional<Review> review = reviewRepository
+      .findByStudentIdAndCourseId(studentId, courseId);
+
+  if (review.isPresent()) {
+      reviewRepository.delete(review.get());
+  }
+
+  // 7. delete enrollment
+  enrollmentRepository.delete(enrollment);
+}
 }

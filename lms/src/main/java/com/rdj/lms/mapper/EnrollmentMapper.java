@@ -12,20 +12,21 @@ import com.rdj.lms.entity.Enrollment;
 public class EnrollmentMapper {
 
     // Entity → Response DTO
-    public EnrollmentResponse toResponse(Enrollment enrollment) {
-        EnrollmentResponse response = new EnrollmentResponse();
-        response.setId(enrollment.getId());
-        response.setEnrolledAt(enrollment.getEnrolledAt());
-        response.setCompleted(enrollment.getCompleted());
-
-        // get student name from nested User object
-        response.setStudentName(enrollment.getStudent().getName());
-
-        // get course title from nested Course object
-        response.setCourseTitle(enrollment.getCourse().getTitle());
-
-        return response;
-    }
+	// EnrollmentMapper.java
+	public EnrollmentResponse toResponse(
+	                            Enrollment enrollment) {
+	    EnrollmentResponse response = new EnrollmentResponse();
+	    response.setId(enrollment.getId());
+	    response.setCourseId(
+	        enrollment.getCourse().getId()); // ← add this ✅
+	    response.setStudentName(
+	        enrollment.getStudent().getName());
+	    response.setCourseTitle(
+	        enrollment.getCourse().getTitle());
+	    response.setEnrolledAt(enrollment.getEnrolledAt());
+	    response.setCompleted(enrollment.getCompleted());
+	    return response;
+	}
 
     // List Entity → List Response DTO
     public List<EnrollmentResponse> toResponseList(

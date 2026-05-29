@@ -22,4 +22,7 @@ public interface EnrollmentService {
 
  // STUDENT — own enrollment only
  void unenrollCourse(Long courseId);
+ 
+ // ADMIN only — unenroll any student from any course
+ void adminUnenrollStudent(Long studentId, Long courseId);
 }

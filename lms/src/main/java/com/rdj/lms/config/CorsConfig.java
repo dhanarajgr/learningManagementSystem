@@ -19,7 +19,8 @@ public class CorsConfig {
      config.setAllowedOrigins(Arrays.asList(
          "http://localhost:3000",    // React
          "http://localhost:4200",    // Angular
-         "http://localhost:8080"     // same server testing
+         "http://localhost:8080",     // same server testing
+         "http://localhost:5173"      // npm vite react
      ));
 
      // allowed HTTP methods

@@ -59,6 +59,18 @@ public class EnrollmentController {
              .ok(enrollmentService
                      .completeCourse(courseId));
  }
+ 
+//─── ADMIN UNENROLL STUDENT ───────────────────────
+//DELETE /api/enrollments/admin/{studentId}/{courseId}
+@DeleteMapping("/admin/{studentId}/{courseId}")
+public ResponseEntity<String> adminUnenrollStudent(
+      @PathVariable Long studentId,
+      @PathVariable Long courseId) {
+  enrollmentService.adminUnenrollStudent(
+                      studentId, courseId);
+  return ResponseEntity
+          .ok("Student unenrolled successfully");
+}
 
  // ─── UNENROLL COURSE — Student only ───────────────
  @DeleteMapping("/{courseId}")
