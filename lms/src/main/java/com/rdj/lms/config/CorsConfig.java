@@ -7,6 +7,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+//config/CorsConfig.java
 @Configuration
 public class CorsConfig {
 
@@ -15,34 +16,36 @@ public class CorsConfig {
 
      CorsConfiguration config = new CorsConfiguration();
 
-     // who can call your API
+     // ── ADD VITE PORT ──────────────────────────────
      config.setAllowedOrigins(Arrays.asList(
-         "http://localhost:3000",    // React
-         "http://localhost:4200",    // Angular
-         "http://localhost:8080",     // same server testing
-         "http://localhost:5173"      // npm vite react
+         "http://localhost:5173",   // Vite ✅
+         "http://localhost:3000",   // CRA
+         "http://localhost:8080"    // same server
      ));
 
-     // allowed HTTP methods
      config.setAllowedMethods(Arrays.asList(
          "GET",
          "POST",
          "PUT",
          "DELETE",
-         "OPTIONS"
+         "OPTIONS"    // ← must include OPTIONS ✅
      ));
 
-     // allowed headers
      config.setAllowedHeaders(Arrays.asList(
-         "Authorization",     // JWT token header
-         "Content-Type",      // JSON content
-         "Accept"
+         "Authorization",
+         "Content-Type",
+         "Accept",
+         "Origin",
+         "X-Requested-With"
      ));
 
-     // allow JWT token in header
      config.setAllowCredentials(true);
 
-     // apply to all routes
+     // ── EXPOSE HEADERS ────────────────────────────
+     config.setExposedHeaders(Arrays.asList(
+         "Authorization"
+     ));
+
      UrlBasedCorsConfigurationSource source =
              new UrlBasedCorsConfigurationSource();
      source.registerCorsConfiguration("/**", config);
