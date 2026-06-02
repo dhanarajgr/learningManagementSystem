@@ -1,9 +1,9 @@
-// src/pages/Register.jsx
+// src/pages/StudentRegister.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 
-const Register = () => {
+const StudentRegister = () => {
 
     const navigate = useNavigate();
 
@@ -17,7 +17,6 @@ const Register = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // handle input change
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -25,7 +24,6 @@ const Register = () => {
         });
     };
 
-    // handle register submit
     const handleRegister = async (e) => {
         e.preventDefault();
         setError('');
@@ -35,23 +33,17 @@ const Register = () => {
             const res = await API.post(
                 '/auth/register', formData);
 
-            // save to localStorage
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('role', res.data.role);
             localStorage.setItem('name', res.data.name);
             localStorage.setItem('email', res.data.email);
 
-            // redirect based on role
-            if (res.data.role === 'STUDENT') {
-                navigate('/student/dashboard');
-            } else if (res.data.role === 'INSTRUCTOR') {
-                navigate('/instructor/dashboard');
-            }
+            navigate('/student/dashboard');
 
         } catch (err) {
             setError(
                 err.response?.data?.message ||
-                'Registration failed. Try again.'
+                'Registration failed'
             );
         } finally {
             setLoading(false);
@@ -62,23 +54,25 @@ const Register = () => {
         <div style={styles.container}>
             <div style={styles.card}>
 
-                {/* header */}
-                <h2 style={styles.title}>Create Account</h2>
+                <div style={styles.badge}>
+                    STUDENT
+                </div>
+
+                <h2 style={styles.title}>
+                    Student Register
+                </h2>
                 <p style={styles.subtitle}>
-                    Join LMS Portal today
+                    Create your student account
                 </p>
 
-                {/* error message */}
                 {error && (
                     <div style={styles.error}>
                         {error}
                     </div>
                 )}
 
-                {/* form */}
                 <form onSubmit={handleRegister}>
 
-                    {/* name */}
                     <div style={styles.formGroup}>
                         <label style={styles.label}>
                             Full Name
@@ -86,7 +80,7 @@ const Register = () => {
                         <input
                             type="text"
                             name="name"
-                            placeholder="Enter your full name"
+                            placeholder="Enter your name"
                             value={formData.name}
                             onChange={handleChange}
                             style={styles.input}
@@ -94,7 +88,6 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* email */}
                     <div style={styles.formGroup}>
                         <label style={styles.label}>
                             Email
@@ -110,7 +103,6 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* password */}
                     <div style={styles.formGroup}>
                         <label style={styles.label}>
                             Password
@@ -126,39 +118,22 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* role */}
-                    <div style={styles.formGroup}>
-                        <label style={styles.label}>
-                            Register As
-                        </label>
-                        <select
-                            name="role"
-                            value={formData.role}
-                            onChange={handleChange}
-                            style={styles.select}>
-                            <option value="STUDENT">
-                                Student
-                            </option>
-                            <option value="INSTRUCTOR">
-                                Instructor
-                            </option>
-                        </select>
-                    </div>
-
                     <button
                         type="submit"
                         style={styles.button}
-                        disabled={loading}>
-                        {loading ? 'Registering...' : 'Register'}
+                        disabled={loading}
+                    >
+                        {loading
+                            ? 'Registering...'
+                            : 'Register'}
                     </button>
 
                 </form>
 
-                {/* login link */}
-                <p style={styles.loginText}>
+                <p style={styles.bottomText}>
                     Already have an account?{' '}
-                    <Link to="/login"
-                        style={styles.loginLink}>
+                    <Link to="/student/login"
+                        style={styles.link}>
                         Login here
                     </Link>
                 </p>
@@ -183,6 +158,17 @@ const styles = {
         boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
         width: '100%',
         maxWidth: '420px'
+    },
+    badge: {
+        backgroundColor: '#e3f2fd',
+        color: '#1565c0',
+        padding: '6px 16px',
+        borderRadius: '20px',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: '16px',
+        letterSpacing: '2px'
     },
     title: {
         textAlign: 'center',
@@ -224,21 +210,10 @@ const styles = {
         outline: 'none',
         boxSizing: 'border-box'
     },
-    select: {
-        width: '100%',
-        padding: '12px',
-        borderRadius: '8px',
-        border: '1px solid #ddd',
-        fontSize: '14px',
-        outline: 'none',
-        boxSizing: 'border-box',
-        backgroundColor: 'white',
-        cursor: 'pointer'
-    },
     button: {
         width: '100%',
         padding: '12px',
-        backgroundColor: '#1a1a2e',
+        backgroundColor: '#1565c0',
         color: 'white',
         border: 'none',
         borderRadius: '8px',
@@ -246,17 +221,17 @@ const styles = {
         cursor: 'pointer',
         marginTop: '8px'
     },
-    loginText: {
+    bottomText: {
         textAlign: 'center',
         marginTop: '20px',
         fontSize: '14px',
         color: '#888'
     },
-    loginLink: {
-        color: '#1a1a2e',
+    link: {
+        color: '#1565c0',
         fontWeight: 'bold',
         textDecoration: 'none'
     }
 };
 
-export default Register;
+export default StudentRegister;

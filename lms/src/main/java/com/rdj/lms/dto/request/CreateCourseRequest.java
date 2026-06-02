@@ -7,19 +7,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//dto/request/CreateCourseRequest.java
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateCourseRequest {
-	
-	@NotBlank(message = "Title is required")
-	private String title;
-	
-	@NotBlank(message = "description is required")
-	private String description;
-	
-	@NotNull(message = "prive is required")
-	@Min(value = 0, message = "price cannot negative")
-	private Double price;
 
+ @NotBlank(message = "Title is required")
+ private String title;
+
+ @NotBlank(message = "Description is required")
+ private String description;
+
+ @NotNull(message = "Price is required")
+ @Min(value = 0, message = "Price cannot be negative")
+ private Double price;
+
+ // ── ADD THIS ──────────────────────────────────────
+ @NotNull(message = "Duration is required")
+ @Min(value = 1, message = "Duration must be at least 1 month")
+ private Integer durationMonths;
 }

@@ -3,17 +3,26 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate }
     from 'react-router-dom';
 
-import Login from './pages/Login';
-import Register from './pages/Register';
 import Home from './pages/Home';
+import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// student pages
+import StudentLogin from './pages/StudentLogin';
+import StudentRegister from './pages/StudentRegister';
 import StudentDashboard from './pages/StudentDashboard';
 import Lessons from './pages/Lessons';
+
+// instructor pages
+import InstructorLogin from './pages/InstructorLogin';
+import InstructorRegister from './pages/InstructorRegister';
 import InstructorDashboard from './pages/InstructorDashboard';
 import CreateCourse from './pages/CreateCourse';
 import AddLesson from './pages/AddLesson';
+
+// admin pages
+import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
-import Navbar from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
     return (
@@ -21,15 +30,15 @@ function App() {
             <Navbar />
             <Routes>
 
-                {/* public routes */}
+                {/* ── PUBLIC ──────────────────────── */}
                 <Route path="/"
                     element={<Home />} />
-                <Route path="/login"
-                    element={<Login />} />
-                <Route path="/register"
-                    element={<Register />} />
 
-                {/* student routes */}
+                {/* ── STUDENT ─────────────────────── */}
+                <Route path="/student/register"
+                    element={<StudentRegister />} />
+                <Route path="/student/login"
+                    element={<StudentLogin />} />
                 <Route path="/student/dashboard"
                     element={
                         <ProtectedRoute role="STUDENT">
@@ -45,7 +54,15 @@ function App() {
                     }
                 />
 
-                {/* instructor routes */}
+                {/* ── INSTRUCTOR ──────────────────── */}
+                <Route path="/instructor"
+                    element={<Navigate to=
+                        "/instructor/register" />}
+                />
+                <Route path="/instructor/register"
+                    element={<InstructorRegister />} />
+                <Route path="/instructor/login"
+                    element={<InstructorLogin />} />
                 <Route path="/instructor/dashboard"
                     element={
                         <ProtectedRoute role="INSTRUCTOR">
@@ -60,7 +77,8 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-                <Route path="/instructor/add-lesson/:courseId"
+                <Route
+                    path="/instructor/add-lesson/:courseId"
                     element={
                         <ProtectedRoute role="INSTRUCTOR">
                             <AddLesson />
@@ -68,7 +86,9 @@ function App() {
                     }
                 />
 
-                {/* admin routes */}
+                {/* ── ADMIN ───────────────────────── */}
+                <Route path="/admin"
+                    element={<AdminLogin />} />
                 <Route path="/admin/dashboard"
                     element={
                         <ProtectedRoute role="ADMIN">
@@ -77,7 +97,7 @@ function App() {
                     }
                 />
 
-                {/* redirect unknown routes */}
+                {/* redirect unknown */}
                 <Route path="*"
                     element={<Navigate to="/" />} />
 

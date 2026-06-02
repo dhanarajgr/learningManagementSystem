@@ -10,7 +10,8 @@ const CreateCourse = () => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        price: ''
+        price: '',
+        durationMonths: '' // ← add this
     });
 
     const [loading, setLoading] = useState(false);
@@ -31,7 +32,9 @@ const CreateCourse = () => {
         try {
             await API.post('/courses', {
                 ...formData,
-                price: parseFloat(formData.price)
+                price: parseFloat(formData.price),
+                durationMonths: parseInt(
+                    formData.durationMonths) // ← add this
             });
             alert('Course created successfully!');
             navigate('/instructor/dashboard');
@@ -49,7 +52,6 @@ const CreateCourse = () => {
         <div style={styles.container}>
             <div style={styles.card}>
 
-                {/* header */}
                 <div style={styles.header}>
                     <h2 style={styles.title}>
                         Create New Course
@@ -63,17 +65,14 @@ const CreateCourse = () => {
                     </button>
                 </div>
 
-                {/* error */}
                 {error && (
                     <div style={styles.error}>
                         {error}
                     </div>
                 )}
 
-                {/* form */}
                 <form onSubmit={handleSubmit}>
 
-                    {/* title */}
                     <div style={styles.formGroup}>
                         <label style={styles.label}>
                             Course Title
@@ -89,7 +88,6 @@ const CreateCourse = () => {
                         />
                     </div>
 
-                    {/* description */}
                     <div style={styles.formGroup}>
                         <label style={styles.label}>
                             Description
@@ -104,7 +102,6 @@ const CreateCourse = () => {
                         />
                     </div>
 
-                    {/* price */}
                     <div style={styles.formGroup}>
                         <label style={styles.label}>
                             Price (Rs.)
@@ -121,12 +118,33 @@ const CreateCourse = () => {
                         />
                     </div>
 
-                    {/* buttons */}
+                    {/* ── ADD DURATION FIELD ── */}
+                    <div style={styles.formGroup}>
+                        <label style={styles.label}>
+                            Duration (Months)
+                        </label>
+                        <input
+                            type="number"
+                            name="durationMonths"
+                            placeholder="Enter duration in months"
+                            value={formData.durationMonths}
+                            onChange={handleChange}
+                            style={styles.input}
+                            min="1"
+                            required
+                        />
+                        <p style={styles.hint}>
+                            Example: 2 months, 6 months,
+                            12 months
+                        </p>
+                    </div>
+
                     <div style={styles.buttons}>
                         <button
                             type="button"
                             onClick={() =>
-                                navigate('/instructor/dashboard')}
+                                navigate(
+                                    '/instructor/dashboard')}
                             style={styles.cancelButton}
                         >
                             Cancel
@@ -222,6 +240,11 @@ const styles = {
         minHeight: '150px',
         resize: 'vertical',
         boxSizing: 'border-box'
+    },
+    hint: {
+        color: '#888',
+        fontSize: '12px',
+        margin: '4px 0 0 0'
     },
     buttons: {
         display: 'flex',

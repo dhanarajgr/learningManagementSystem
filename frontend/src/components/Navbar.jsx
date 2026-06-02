@@ -1,79 +1,131 @@
 // src/components/Navbar.jsx
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation }
+    from 'react-router-dom';
 
 const Navbar = () => {
 
     const navigate = useNavigate();
+    const location = useLocation();
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     const name = localStorage.getItem('name');
 
+    // check which section user is in
+    const isInstructor = location.pathname
+        .startsWith('/instructor');
+    const isAdmin = location.pathname
+        .startsWith('/admin');
+    const isStudent = !isInstructor && !isAdmin;
+
     const handleLogout = () => {
         localStorage.clear();
-        navigate('/login');
+        if (isInstructor) {
+            navigate('/instructor/login');
+        } else if (isAdmin) {
+            navigate('/admin');
+        } else {
+            navigate('/student/login');
+        }
     };
 
     return (
         <nav style={styles.nav}>
 
             {/* logo */}
-            <Link to="/" style={styles.logo}>
-                LMS Portal
-            </Link>
+            <div style={styles.logo}>
+                {isAdmin
+                    ? 'LMS Admin'
+                    : isInstructor
+                        ? 'LMS Instructor'
+                        : 'LMS Portal'}
+            </div>
 
             {/* links */}
             <div style={styles.links}>
 
-                <Link to="/" style={styles.link}>
-                    Courses
-                </Link>
-
-                {/* student links */}
-                {token && role === 'STUDENT' && (
-                    <Link to="/student/dashboard"
-                        style={styles.link}>
-                        My Courses
-                    </Link>
-                )}
-
-                {/* instructor links */}
-                {token && role === 'INSTRUCTOR' && (
+                {/* ── STUDENT NAVBAR ─────────────── */}
+                {isStudent && (
                     <>
-                        <Link to="/instructor/dashboard"
+                        <Link to="/"
                             style={styles.link}>
-                            My Courses
+                            Courses
                         </Link>
-                        <Link to="/instructor/create-course"
-                            style={styles.link}>
-                            Create Course
-                        </Link>
+
+                        {token && role === 'STUDENT' && (
+                            <Link
+                                to="/student/dashboard"
+                                style={styles.link}>
+                                My Courses
+                            </Link>
+                        )}
+
+                        {!token && (
+                            <>
+                                <Link
+                                    to="/student/login"
+                                    style={styles.link}>
+                                    Login
+                                </Link>
+                                <Link
+                                    to="/student/register"
+                                    style={styles.registerLink}>
+                                    Register
+                                </Link>
+                            </>
+                        )}
                     </>
                 )}
 
-                {/* admin links */}
-                {token && role === 'ADMIN' && (
-                    <Link to="/admin/dashboard"
-                        style={styles.link}>
-                        Admin Panel
-                    </Link>
-                )}
-
-                {/* not logged in */}
-                {!token && (
+                {/* ── INSTRUCTOR NAVBAR ──────────── */}
+                {isInstructor && (
                     <>
-                        <Link to="/login"
-                            style={styles.link}>
-                            Login
-                        </Link>
-                        <Link to="/register"
-                            style={styles.link}>
-                            Register
-                        </Link>
+                        {token && role === 'INSTRUCTOR' && (
+                            <>
+                                <Link
+                                    to="/instructor/dashboard"
+                                    style={styles.link}>
+                                    My Courses
+                                </Link>
+                                <Link
+                                    to="/instructor/create-course"
+                                    style={styles.link}>
+                                    Create Course
+                                </Link>
+                            </>
+                        )}
+
+                        {!token && (
+                            <>
+                                <Link
+                                    to="/instructor/login"
+                                    style={styles.link}>
+                                    Login
+                                </Link>
+                                <Link
+                                    to="/instructor/register"
+                                    style={styles.registerLink}>
+                                    Register
+                                </Link>
+                            </>
+                        )}
                     </>
                 )}
 
-                {/* logged in */}
+                {/* ── ADMIN NAVBAR ───────────────── */}
+                {isAdmin && (
+                    <>
+                        {token && role === 'ADMIN' && (
+                            <Link
+                                to="/admin/dashboard"
+                                style={styles.link}>
+                                Dashboard
+                            </Link>
+                        )}
+                    </>
+                )}
+
+                {/* ── LOGGED IN USER ─────────────── */}
                 {token && (
                     <>
                         <span style={styles.name}>
@@ -86,6 +138,7 @@ const Navbar = () => {
                         </button>
                     </>
                 )}
+
             </div>
         </nav>
     );
@@ -102,9 +155,9 @@ const styles = {
     },
     logo: {
         color: 'white',
-        textDecoration: 'none',
         fontSize: '22px',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        cursor: 'pointer'
     },
     links: {
         display: 'flex',
@@ -115,6 +168,15 @@ const styles = {
         color: 'white',
         textDecoration: 'none',
         fontSize: '15px'
+    },
+    registerLink: {
+        color: '#1a1a2e',
+        textDecoration: 'none',
+        fontSize: '14px',
+        backgroundColor: '#00d4ff',
+        padding: '8px 16px',
+        borderRadius: '6px',
+        fontWeight: 'bold'
     },
     name: {
         color: '#00d4ff',

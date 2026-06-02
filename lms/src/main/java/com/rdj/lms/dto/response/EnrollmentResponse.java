@@ -6,16 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//dto/response/EnrollmentResponse.java
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class EnrollmentResponse {
-	
-	    private Long id;
-	    private Long courseId; 
-	    private String studentName;  // only name not full user object
-	    private String courseTitle;  // only title not full course object
-	    private LocalDateTime enrolledAt;
-	    private Boolean completed;
 
+ private Long id;
+ private Long courseId;
+ private String studentName;
+ private String courseTitle;
+ private LocalDateTime enrolledAt;
+ private LocalDateTime expiryDate; // ← add this ✅
+ private Boolean completed;
 }

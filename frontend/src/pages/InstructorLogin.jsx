@@ -1,9 +1,9 @@
-// src/pages/Login.jsx
+// src/pages/InstructorLogin.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 
-const Login = () => {
+const InstructorLogin = () => {
 
     const navigate = useNavigate();
 
@@ -15,7 +15,6 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // handle input change
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -23,29 +22,28 @@ const Login = () => {
         });
     };
 
-    // handle login submit
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
         try {
-            const res = await API.post('/auth/login', formData);
+            const res = await API.post(
+                '/auth/login', formData);
 
-            // save to localStorage
+            if (res.data.role !== 'INSTRUCTOR') {
+                setError(
+                    'Access denied. Instructor only.'
+                );
+                return;
+            }
+
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('role', res.data.role);
             localStorage.setItem('name', res.data.name);
             localStorage.setItem('email', res.data.email);
 
-            // redirect based on role
-            if (res.data.role === 'STUDENT') {
-                navigate('/student/dashboard');
-            } else if (res.data.role === 'INSTRUCTOR') {
-                navigate('/instructor/dashboard');
-            } else if (res.data.role === 'ADMIN') {
-                navigate('/admin/dashboard');
-            }
+            navigate('/instructor/dashboard');
 
         } catch (err) {
             setError(
@@ -61,20 +59,23 @@ const Login = () => {
         <div style={styles.container}>
             <div style={styles.card}>
 
-                {/* header */}
-                <h2 style={styles.title}>Welcome Back</h2>
+                <div style={styles.badge}>
+                    INSTRUCTOR
+                </div>
+
+                <h2 style={styles.title}>
+                    Instructor Login
+                </h2>
                 <p style={styles.subtitle}>
-                    Login to your LMS account
+                    Login to your instructor account
                 </p>
 
-                {/* error message */}
                 {error && (
                     <div style={styles.error}>
                         {error}
                     </div>
                 )}
 
-                {/* form */}
                 <form onSubmit={handleLogin}>
 
                     <div style={styles.formGroup}>
@@ -110,17 +111,19 @@ const Login = () => {
                     <button
                         type="submit"
                         style={styles.button}
-                        disabled={loading}>
-                        {loading ? 'Logging in...' : 'Login'}
+                        disabled={loading}
+                    >
+                        {loading
+                            ? 'Logging in...'
+                            : 'Login'}
                     </button>
 
                 </form>
 
-                {/* register link */}
-                <p style={styles.registerText}>
-                    Don't have an account?{' '}
-                    <Link to="/register"
-                        style={styles.registerLink}>
+                <p style={styles.bottomText}>
+                    No account?{' '}
+                    <Link to="/instructor/register"
+                        style={styles.link}>
                         Register here
                     </Link>
                 </p>
@@ -145,6 +148,17 @@ const styles = {
         boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
         width: '100%',
         maxWidth: '420px'
+    },
+    badge: {
+        backgroundColor: '#e0f2f1',
+        color: '#00695c',
+        padding: '6px 16px',
+        borderRadius: '20px',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: '16px',
+        letterSpacing: '2px'
     },
     title: {
         textAlign: 'center',
@@ -189,7 +203,7 @@ const styles = {
     button: {
         width: '100%',
         padding: '12px',
-        backgroundColor: '#1a1a2e',
+        backgroundColor: '#00695c',
         color: 'white',
         border: 'none',
         borderRadius: '8px',
@@ -197,17 +211,17 @@ const styles = {
         cursor: 'pointer',
         marginTop: '8px'
     },
-    registerText: {
+    bottomText: {
         textAlign: 'center',
         marginTop: '20px',
         fontSize: '14px',
         color: '#888'
     },
-    registerLink: {
-        color: '#1a1a2e',
+    link: {
+        color: '#00695c',
         fontWeight: 'bold',
         textDecoration: 'none'
     }
 };
 
-export default Login;
+export default InstructorLogin;

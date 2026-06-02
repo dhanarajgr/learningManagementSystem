@@ -6,19 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//dto/response/CourseResponse.java
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class CourseResponse {
-	
-	    private Long id;
-	    private String title;
-	    private String description;
-	    private Double price;
-	    private String instructorName;  // only name not full user object
-	    private long totalLessons;      // count of lessons
-	    private double averageRating;   // avg of all reviews
-	    private LocalDateTime createdAt;
-	    
 
+ private Long id;
+ private String title;
+ private String description;
+ private Double price;
+ private Integer durationMonths; // ← add this ✅
+ private String instructorName;
+ private long totalLessons;
+ private double averageRating;
+ private LocalDateTime createdAt;
 }

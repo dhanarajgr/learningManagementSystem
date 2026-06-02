@@ -13,12 +13,10 @@ const StudentDashboard = () => {
 
     const name = localStorage.getItem('name');
 
-    // fetch enrollments on load
     useEffect(() => {
         fetchEnrollments();
     }, []);
 
-    // get my enrollments
     const fetchEnrollments = async () => {
         try {
             const res = await API.get(
@@ -31,7 +29,6 @@ const StudentDashboard = () => {
         }
     };
 
-    // unenroll from course
     const handleUnenroll = async (courseId) => {
         if (!window.confirm(
             'Are you sure you want to unenroll?')) {
@@ -49,7 +46,6 @@ const StudentDashboard = () => {
         }
     };
 
-    // complete course
     const handleComplete = async (courseId) => {
         try {
             await API.put(
@@ -62,6 +58,40 @@ const StudentDashboard = () => {
                 'Already completed'
             );
         }
+    };
+
+    // check if expiry date is near (within 7 days)
+    const isExpiringSoon = (expiryDate) => {
+        const expiry = new Date(expiryDate);
+        const now = new Date();
+        const diffDays = Math.ceil(
+            (expiry - now) / (1000 * 60 * 60 * 24)
+        );
+        return diffDays <= 7 && diffDays > 0;
+    };
+
+    // check if expired
+    const isExpired = (expiryDate) => {
+        return new Date(expiryDate) < new Date();
+    };
+
+    // get expiry color
+    const getExpiryColor = (expiryDate) => {
+        if (isExpired(expiryDate)) return '#e74c3c';
+        if (isExpiringSoon(expiryDate)) return '#e65100';
+        return '#2e7d32';
+    };
+
+    // get days remaining
+    const getDaysRemaining = (expiryDate) => {
+        const expiry = new Date(expiryDate);
+        const now = new Date();
+        const diffDays = Math.ceil(
+            (expiry - now) / (1000 * 60 * 60 * 24)
+        );
+        if (diffDays <= 0) return 'Expired';
+        if (diffDays === 1) return '1 day left';
+        return `${diffDays} days left`;
     };
 
     return (
@@ -79,7 +109,8 @@ const StudentDashboard = () => {
                 </div>
                 <button
                     onClick={() => navigate('/')}
-                    style={styles.browseButton}>
+                    style={styles.browseButton}
+                >
                     Browse Courses
                 </button>
             </div>
@@ -112,7 +143,26 @@ const StudentDashboard = () => {
                         In Progress
                     </p>
                 </div>
+                <div style={styles.statCard}>
+                    <h3 style={styles.statNumber}>
+                        {enrollments.filter(e =>
+                            isExpiringSoon(e.expiryDate)
+                        ).length}
+                    </h3>
+                    <p style={styles.statLabel}>
+                        Expiring Soon
+                    </p>
+                </div>
             </div>
+
+            {/* expiring soon warning */}
+            {enrollments.some(e =>
+                isExpiringSoon(e.expiryDate)) && (
+                    <div style={styles.warning}>
+                        Some courses are expiring soon.
+                        Complete them before they expire!
+                    </div>
+                )}
 
             {/* enrollments */}
             <div style={styles.section}>
@@ -139,7 +189,8 @@ const StudentDashboard = () => {
                             in any course yet</p>
                         <button
                             onClick={() => navigate('/')}
-                            style={styles.browseButton}>
+                            style={styles.browseButton}
+                        >
                             Browse Courses
                         </button>
                     </div>
@@ -148,9 +199,17 @@ const StudentDashboard = () => {
                 {/* enrollment list */}
                 <div style={styles.grid}>
                     {enrollments.map((enrollment) => (
-                        <div key={enrollment.id}
-                            style={styles.card}>
-
+                        <div
+                            key={enrollment.id}
+                            style={{
+                                ...styles.card,
+                                borderColor:
+                                    isExpiringSoon(
+                                        enrollment.expiryDate)
+                                        ? '#e65100'
+                                        : '#eee'
+                            }}
+                        >
                             {/* course title */}
                             <h3 style={styles.courseTitle}>
                                 {enrollment.courseTitle}
@@ -169,16 +228,49 @@ const StudentDashboard = () => {
                                         : '#e65100'
                             }}>
                                 {enrollment.completed
-                                    ? '✅ Completed'
-                                    : '📖 In Progress'}
+                                    ? 'Completed'
+                                    : 'In Progress'}
                             </span>
 
                             {/* enrolled date */}
                             <p style={styles.date}>
                                 Enrolled:{' '}
-                                {new Date(enrollment.enrolledAt)
+                                {new Date(
+                                    enrollment.enrolledAt)
                                     .toLocaleDateString()}
                             </p>
+
+                            {/* expiry date */}
+                            <div style={styles.expiryBox}>
+                                <p style={{
+                                    ...styles.expiryDate,
+                                    color: getExpiryColor(
+                                        enrollment.expiryDate)
+                                }}>
+                                    Expires:{' '}
+                                    {new Date(
+                                        enrollment.expiryDate)
+                                        .toLocaleDateString()}
+                                </p>
+                                <span style={{
+                                    ...styles.daysLeft,
+                                    backgroundColor:
+                                        getExpiryColor(
+                                            enrollment.expiryDate),
+                                }}>
+                                    {getDaysRemaining(
+                                        enrollment.expiryDate)}
+                                </span>
+                            </div>
+
+                            {/* expiring soon warning */}
+                            {isExpiringSoon(
+                                enrollment.expiryDate) && (
+                                    <p style={styles.expireWarning}>
+                                        Expiring soon! Complete
+                                        this course quickly.
+                                    </p>
+                                )}
 
                             {/* action buttons */}
                             <div style={styles.actions}>
@@ -188,7 +280,8 @@ const StudentDashboard = () => {
                                     onClick={() => navigate(
                                         `/student/lessons/${enrollment.courseId}`
                                     )}
-                                    style={styles.lessonsButton}>
+                                    style={styles.lessonsButton}
+                                >
                                     View Lessons
                                 </button>
 
@@ -199,7 +292,9 @@ const StudentDashboard = () => {
                                             handleComplete(
                                                 enrollment.courseId
                                             )}
-                                        style={styles.completeButton}>
+                                        style={
+                                            styles.completeButton}
+                                    >
                                         Mark Complete
                                     </button>
                                 )}
@@ -210,7 +305,8 @@ const StudentDashboard = () => {
                                         handleUnenroll(
                                             enrollment.courseId
                                         )}
-                                    style={styles.unenrollButton}>
+                                    style={styles.unenrollButton}
+                                >
                                     Unenroll
                                 </button>
 
@@ -255,9 +351,9 @@ const styles = {
     },
     stats: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridTemplateColumns: 'repeat(4, 1fr)',
         gap: '20px',
-        marginBottom: '30px'
+        marginBottom: '24px'
     },
     statCard: {
         backgroundColor: 'white',
@@ -275,6 +371,16 @@ const styles = {
         color: '#888',
         margin: '8px 0 0 0',
         fontSize: '14px'
+    },
+    warning: {
+        backgroundColor: '#fff3e0',
+        color: '#e65100',
+        padding: '12px 20px',
+        borderRadius: '8px',
+        marginBottom: '24px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
     section: {
         backgroundColor: 'white',
@@ -307,12 +413,12 @@ const styles = {
         gap: '20px'
     },
     card: {
-        border: '1px solid #eee',
+        border: '2px solid #eee',
         borderRadius: '12px',
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px'
+        gap: '10px'
     },
     courseTitle: {
         fontSize: '18px',
@@ -330,6 +436,32 @@ const styles = {
         color: '#888',
         fontSize: '13px',
         margin: 0
+    },
+    expiryBox: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    expiryDate: {
+        fontSize: '13px',
+        margin: 0,
+        fontWeight: 'bold'
+    },
+    daysLeft: {
+        color: 'white',
+        fontSize: '11px',
+        padding: '3px 8px',
+        borderRadius: '12px',
+        fontWeight: 'bold'
+    },
+    expireWarning: {
+        backgroundColor: '#fff3e0',
+        color: '#e65100',
+        padding: '8px',
+        borderRadius: '6px',
+        fontSize: '12px',
+        margin: 0,
+        textAlign: 'center'
     },
     actions: {
         display: 'flex',
